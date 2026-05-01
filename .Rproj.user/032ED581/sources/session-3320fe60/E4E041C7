@@ -1,0 +1,32 @@
+{
+    "id": "E4E041C7",
+    "path": "~/trabalho_final_CD2/docs/relatorio.Rmd",
+    "project_path": "docs/relatorio.Rmd",
+    "type": "r_markdown",
+    "hash": "1029304651",
+    "contents": "",
+    "dirty": false,
+    "created": 1777545359341.0,
+    "source_on_save": false,
+    "relative_order": 4,
+    "properties": {
+        "tempName": "Untitled2",
+        "source_window_id": "",
+        "Source": "Source",
+        "cursorPosition": "5,3",
+        "scrollLine": "5",
+        "rmdVisualMode": "false",
+        "rmdVisualWrapConfigured": "true",
+        "docOutlineVisible": "0",
+        "rmdVisualCollapsedChunks": "",
+        "rmdVisualModeLocation": "198:0"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1777588643,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1777588643287,
+    "read_only": false,
+    "read_only_alternatives": []
+}

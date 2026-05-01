@@ -1,0 +1,10 @@
+---
+title: "Bloco de código em R"
+author: ""
+date: ""
+output: html_document
+---
+## Exemplo de bloco de comandos em **R**
+
+```{r}
+summary(mtcars)

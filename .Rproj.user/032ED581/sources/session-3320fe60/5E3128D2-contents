@@ -1,0 +1,333 @@
+library(tidyverse)
+library(questionr)
+library(clipr)
+
+base <- Taxas_RCBP_cid_Patrícia
+names(base)
+freq(base$ano)
+freq(base$rcbp)
+freq(base$CID_2)
+
+base <- base %>%
+  filter(CID_2 != 'C76', CID_2 != 'C77', CID_2 != 'C78', 
+         CID_2 != 'C79', CID_2 != 'C80', CID_2 != 'C97', CID_2 != 'D46')
+
+base <- base %>% 
+  mutate( CID_3 = case_when(
+  grepl("C0[0-6]", CID_2) ~ "cav_oral",
+    grepl("C0[7-8]", CID_2) ~ "gl_salivares",
+    grepl("C09|C10", CID_2) ~ "orofaringe",
+    grepl("C11", CID_2) ~ "nasofaringe",
+    grepl("C1[2-3]", CID_2) ~ "hipofaringe",
+    grepl("C15", CID_2) ~ "esofago",
+    grepl("C16", CID_2) ~ "estomago",
+    grepl("C1[8-9]|C20", CID_2) ~ "colorretal",
+    grepl("C21", CID_2) ~ "anus",
+    grepl("C22", CID_2) ~ "figado",
+    grepl("C23", CID_2) ~ "vesicula",
+    grepl("C25", CID_2) ~ "pancreas",
+    grepl("C32", CID_2) ~ "laringe",
+    grepl("C3[3-4]", CID_2) ~ "TBL",
+    grepl("C4[0-1]", CID_2) ~ "ossos",
+    grepl("C43", CID_2) ~ "melanoma",
+    grepl("C44", CID_2) ~ "pele",
+    grepl("C45", CID_2) ~ "mesotelioma",
+    grepl("C46", CID_2) ~ "kaposi",
+    grepl("C50", CID_2) ~ "mama",
+    grepl("C51", CID_2) ~ "vulva",
+    grepl("C52", CID_2) ~ "vagina",
+    grepl("C53", CID_2) ~ "col_utero",
+    grepl("C54", CID_2) ~ "utero",
+    grepl("C56", CID_2) ~ "ovario",
+    grepl("C60", CID_2) ~ "penis",
+    grepl("C61", CID_2) ~ "prostata",
+    grepl("C62", CID_2) ~ "testiculo",
+    grepl("C6[4-5]", CID_2) ~ "rim",
+    grepl("C67", CID_2) ~ "bexiga",
+    grepl("C7[0-2]", CID_2) ~ "SNC",
+    grepl("C73", CID_2) ~ "tireoide",
+    grepl("C81", CID_2) ~ "LH",
+    grepl("C8[2-6]|C96", CID_2) ~ "LNH",
+    grepl("C9[1-5]", CID_2) ~ "leucemia",
+    grepl("C88|C90", CID_2) ~ "mieloma",
+    grepl("C7[6-9]|C80|C97", CID_2) ~ "indefinido"))
+
+infantil <- base %>%
+  filter(idade_gp == '00-04'|idade_gp == '05-09'|
+           idade_gp == '10-14')
+
+AYA <- base %>%
+  filter(idade_gp == '15-19'|idade_gp == '20-24'|
+           idade_gp == '25-29'|idade_gp == '30-34'|
+           idade_gp == '35-39')
+AYA_hemato <- AYA %>%
+  filter(CID_3 == 'leucemia'|CID_3 == 'LH'|CID_3 == 'LNH'|CID_3 == 'mieloma')
+saveRDS(AYA_hemato, "AYA_hemato.rds")
+# Para carregar: novo_objeto <- readRDS("objeto.rds")
+
+
+old <- base %>% 
+  filter(idade_gp == '40-44'|idade_gp == '45-49'|
+           idade_gp == '50-54'|idade_gp == '55-59'|
+           idade_gp == '60-64'|idade_gp == '65-69'|
+           idade_gp == '70-74'|idade_gp == '75-79'|
+           idade_gp == '80+')    
+
+#outros <- AYA %>% filter(CID_2 == 'C14'| CID_2 == 'C17'|
+                           CID_2 == 'C24'| CID_2 == 'C26'| CID_2 == 'C30'|
+                           CID_2 == 'C31'| CID_2 == 'C37'| CID_2 == 'C38'|
+                           CID_2 == 'C39'| CID_2 == 'C47'| CID_2 == 'C48'| 
+                           CID_2 == 'C49'| CID_2 == 'C55'| CID_2 == 'C57'|
+                           CID_2 == 'C58'| CID_2 == 'C63'| CID_2 == 'C66'|
+                           CID_2 == 'C68'| CID_2 == 'C69'| CID_2 == 'C74'|
+                           CID_2 == 'C75'| CID_2 == 'C76'| CID_2 == 'C77'|
+                           CID_2 == 'C78'| CID_2 == 'C79'| CID_2 == 'C80'|
+                           CID_2 == 'C97'| CID_2 == 'D46')
+
+AYA <- AYA %>% filter(CID_2 != 'C14', CID_2 != 'C17', 
+         CID_2 != 'C24', CID_2 != 'C26', CID_2 != 'C30', 
+         CID_2 != 'C31', CID_2 != 'C37', CID_2 != 'C38', 
+         CID_2 != 'C39', CID_2 != 'C47', CID_2 != 'C48', 
+         CID_2 != 'C49', CID_2 != 'C55', CID_2 != 'C57', 
+         CID_2 != 'C58', CID_2 != 'C63', CID_2 != 'C66', 
+         CID_2 != 'C68', CID_2 != 'C69', CID_2 != 'C74', 
+         CID_2 != 'C75')#
+
+
+
+
+###TOTAL DE OBITOS POR ANO
+
+daux00 = unique(AYA [,c("ano","pop")])%>% 
+  group_by(ano) %>%
+  summarise(pop_agreg = sum(pop, na.rm=T), .groups = "drop")
+write_clip(daux00)
+
+daux01 <- AYA_hemato[ , c('numcasos', 'ano')] %>%
+  group_by(ano) %>%
+  summarise(tot_obitos = sum(numcasos, na.rm=T), .groups = "drop")
+write_clip(daux01)
+
+daux03 = left_join(daux00, daux01, by = c("ano"))
+
+daux03$tx_esp = (daux03$tot_obitos/daux03$pop_agreg)*100000
+
+write_clip(daux03)
+
+###TOTAL DE OBITOS POR ANO POR FAIXA ETARIA
+
+rm(daux00, daux01, daux03, daux04, daux05)
+
+daux00 = unique(AYA[,c("sexo","ano","pop")])%>% 
+  group_by(sexo, ano) %>%
+  summarise(pop_agreg = sum(pop, na.rm=T), .groups = "drop")
+#write_clip(daux00)
+
+daux01 <- AYA[ , c('sexo','ano','numcasos')] %>%
+  group_by(sexo, ano) %>%
+  summarise(tot_obitos = sum(numcasos, na.rm=T), .groups = "drop")
+#write_clip(daux01)
+
+daux03 = left_join(daux00, daux01, by = c("sexo","ano"))
+
+daux03$tx_esp = (daux03$tot_obitos/daux03$pop_agreg)*100000
+#write_clip(daux03)
+daux03 <- daux03 %>%
+  mutate (wsp = case_when(idade_gp %in% "15-19" ~ "24324",
+                          idade_gp %in% "20-24" ~ "21622",
+                          idade_gp %in% "25-29" ~ "21622",
+                          idade_gp %in% "30-34" ~ "16216",
+                          idade_gp %in% "35-39" ~ "16216"))
+
+daux03$wsp <- as.numeric(daux03$wsp)
+
+daux03$n_ASMR = (daux03$tot_obitos/daux03$pop_agreg)*daux03$wsp
+
+daux03 <- na.omit(daux03)
+
+daux04 = unique(daux03[,c("ano","n_ASMR")])%>% 
+  group_by(ano) %>%
+  summarise(ASMR_agreg = sum(n_ASMR, na.rm=T), .groups = "drop")
+
+daux05 = left_join(daux03, daux04, by = c("ano"))
+
+write_clip(daux04, dec = '.')
+
+###TOTAL DE OBITOS POR ANO POR SEXO
+
+rm(daux00, daux01, daux03, daux04, daux05)
+
+daux00 = unique(AYA[,c("idade_gp","sexo","ano","pop")])%>% 
+  group_by(idade_gp,sexo,ano) %>%
+  summarise(pop_agreg = sum(pop, na.rm=T), .groups = "drop")
+#write_clip(daux00)
+
+daux01 <- AYA[ , c('idade_gp','sexo','ano','numcasos')] %>%
+  group_by(idade_gp, sexo, ano) %>%
+  summarise(tot_obitos = sum(numcasos, na.rm=T), .groups = "drop")
+write_clip(daux01)
+
+daux03 = left_join(daux00, daux01, by = c("idade_gp","sexo","ano"))
+
+daux03$tx_esp = (daux03$tot_obitos/daux03$pop_agreg)*100000
+
+daux03 <- daux03 %>%
+  mutate (wsp = case_when(idade_gp %in% "15-19" ~ "24324",
+                          idade_gp %in% "20-24" ~ "21622",
+                          idade_gp %in% "25-29" ~ "21622",
+                          idade_gp %in% "30-34" ~ "16216",
+                          idade_gp %in% "35-39" ~ "16216"))
+
+daux03$wsp <- as.numeric(daux03$wsp)
+
+daux03$n_ASMR = (daux03$tot_obitos/daux03$pop_agreg)*daux03$wsp
+
+daux03 <- na.omit(daux03)
+
+daux04 = unique(daux03[,c("sexo","ano","n_ASMR")]) %>% 
+  group_by(sexo,ano) %>%
+  summarise(ASMR_agreg = sum(n_ASMR, na.rm=T), .groups = "drop")
+
+daux05 = left_join(daux03, daux04, by = c("sexo","ano"))
+
+write_clip(daux04, dec = '.')
+
+###TOTAL DE OBITOS POR ANO POR RCBP
+
+rm(daux00, daux01, daux03, daux04, daux05)
+
+daux00 = unique(AYA[,c("idade_gp","rcbp","ano","pop")])%>% 
+  group_by(idade_gp,rcbp,ano) %>%
+  summarise(pop_agreg = sum(pop, na.rm=T), .groups = "drop")
+#write_clip(daux00)
+
+daux01 <- AYA[ , c('idade_gp','rcbp','ano','numcasos')] %>%
+  group_by(idade_gp, rcbp, ano) %>%
+  summarise(tot_obitos = sum(numcasos, na.rm=T), .groups = "drop")
+#write_clip(daux01)
+
+daux03 = right_join(daux00, daux01, by = c("idade_gp","rcbp","ano"))
+
+daux03$tx_esp = (daux03$tot_obitos/daux03$pop_agreg)*100000
+
+daux03 <- daux03 %>%
+  mutate (wsp = case_when(idade_gp %in% "15-19" ~ "24324",
+                          idade_gp %in% "20-24" ~ "21622",
+                          idade_gp %in% "25-29" ~ "21622",
+                          idade_gp %in% "30-34" ~ "16216",
+                          idade_gp %in% "35-39" ~ "16216"))
+
+daux03$wsp <- as.numeric(daux03$wsp)
+
+daux03$n_ASMR = (daux03$tot_obitos/daux03$pop_agreg)*daux03$wsp
+
+daux03 <- na.omit(daux03)
+
+daux04 = unique(daux03[,c("rcbp","ano","n_ASMR")]) %>% 
+  group_by(rcbp,ano) %>%
+  summarise(ASMR_agreg = sum(n_ASMR, na.rm=T), .groups = "drop")
+
+daux05 = left_join(daux03, daux04, by = c("rcbp","ano"))
+
+write_clip(daux04, dec = '.')
+
+###TOTAL DE OBITOS POR ANO POR GRUPOS DE CID E SEXO
+
+rm(daux00, daux01, daux03, daux04, daux05)
+
+daux00 = unique(AYA_hemato[,c("idade_gp","ano","pop")])%>% 
+  group_by(idade_gp,ano) %>%
+  summarise(pop_agreg = sum(pop, na.rm=T), .groups = "drop")
+#write_clip(daux00)
+
+daux01 <- AYA_hemato[ , c('idade_gp','CID_3','ano','numcasos')] %>%
+  group_by(idade_gp, CID_3, ano) %>%
+  summarise(tot_obitos = sum(numcasos, na.rm=T), .groups = "drop")
+#write_clip(daux01)
+
+daux03 = right_join(daux00, daux01, by = c("idade_gp","ano"))
+
+daux03$tx_esp = (daux03$tot_obitos/daux03$pop_agreg)*100000
+
+daux03 <- daux03 %>%
+  mutate (wsp = case_when(idade_gp %in% "15-19" ~ "24324",
+                          idade_gp %in% "20-24" ~ "21622",
+                          idade_gp %in% "25-29" ~ "21622",
+                          idade_gp %in% "30-34" ~ "16216",
+                          idade_gp %in% "35-39" ~ "16216"))
+
+daux03$wsp <- as.numeric(daux03$wsp)
+
+daux03$n_ASMR = (daux03$tot_obitos/daux03$pop_agreg)*daux03$wsp
+
+daux03 <- na.omit(daux03)
+
+daux04 = unique(daux03[,c("CID_3","ano","n_ASMR")]) %>% 
+  group_by(CID_3,ano) %>%
+  summarise(ASMR = sum(n_ASMR, na.rm=T), .groups = "drop")
+
+daux05 = left_join(daux03, daux04, by = c("CID_3","ano"))
+
+daux05 <- daux05 %>%
+  rename(ASMR = ASMR_agreg)
+
+write_clip(daux04, dec = '.')
+
+
+###TOTAL DE OBITOS para os principais cânceres por RCBP
+rm(daux00, daux01, daux03, daux04, daux05)
+
+daux00 = unique(AYA[,c("idade_gp","rcbp","ano","pop")])%>% 
+  group_by(idade_gp,rcbp,ano) %>%
+  summarise(pop_agreg = sum(pop, na.rm=T), .groups = "drop")
+write_clip(daux00)
+
+daux01 <- AYA[ , c('idade_gp','rcbp','CID_3','ano','numcasos')] %>%
+  group_by(idade_gp, rcbp, CID_3, ano) %>%
+  summarise(tot_obitos = sum(numcasos, na.rm=T), .groups = "drop")
+write_clip(daux01)
+
+daux03 = right_join(daux00, daux01, by = c("idade_gp","rcbp","ano"))
+
+daux03$tx_esp = (daux03$tot_obitos/daux03$pop_agreg)*100000
+
+daux03 <- daux03 %>%
+  mutate (wsp = case_when(idade_gp %in% "15-19" ~ "24324",
+                          idade_gp %in% "20-24" ~ "21622",
+                          idade_gp %in% "25-29" ~ "21622",
+                          idade_gp %in% "30-34" ~ "16216",
+                          idade_gp %in% "35-39" ~ "16216"))
+
+daux03$wsp <- as.numeric(daux03$wsp)
+
+daux03$n_ASMR = (daux03$tot_obitos/daux03$pop_agreg)*daux03$wsp
+
+daux03 <- na.omit(daux03)
+
+daux04 = unique(daux03[,c("rcbp","CID_3","ano","n_ASMR")]) %>% 
+  group_by(rcbp,CID_3,ano) %>%
+  summarise(ASMR_agreg = sum(n_ASMR, na.rm=T), .groups = "drop")
+
+daux05 = left_join(daux03, daux04, by = c("rcbp","CID_3","ano"))
+
+write_clip(daux04, dec = '.')
+
+library(ggplot2
+)
+ggplot(daux05, aes(x = ano, y = ASMR_agreg, color = sexo, group = sexo)) +
+  geom_line(linewidth = 0.7) +
+  geom_point(linewidth = 0.8) +
+  scale_y_log10() +
+  labs(
+    x = "ano",
+    y = "ASMR",
+    color = "sexo",
+    title = "Taxa de mortalidade ajustada por idade para o cancer de início precoce no conjunto dos treze RCBP, na população
+    de 15 a 39 anos, segundo o sexo, entre os anos de 2001 a 2017"
+  ) +
+  theme_minimal(base_size = 10) +
+  theme(
+    strip.text = element_text(face = "bold"),
+    legend.position = "bottom"
+  )
+

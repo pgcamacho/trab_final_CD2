@@ -1,0 +1,736 @@
+library(readr)
+Base_RCBP_Patricia_Camacho_02 <- read_csv("minha tese/RCBP/bases rcbp/Base_RCBP_Patricia_Camacho_02.csv")
+View(Base_RCBP_Patricia_Camacho_02)
+
+library(tidyverse)
+library(questionr)
+library(clipr)
+
+dados <- Base_RCBP_Patricia_Camacho_02 %>%
+  mutate (fx_eta = cut(idade, breaks = c(-Inf,14,39,59,Inf)),
+          wsp = case_when(idade_gp %in% "00-04" ~ "12000",
+                          idade_gp %in% "05-09" ~ "10000",
+                          idade_gp %in% "10-14" ~ "9000",
+                          idade_gp %in% "15-19" ~ "9000",
+                          idade_gp %in% "20-24" ~ "8000",
+                          idade_gp %in% "25-29" ~ "8000",
+                          idade_gp %in% "30-34" ~ "6000",
+                          idade_gp %in% "35-39" ~ "6000",
+                          idade_gp %in% "40-44" ~ "6000",
+                          idade_gp %in% "45-49" ~ "6000",
+                          idade_gp %in% "50-54" ~ "5000",
+                          idade_gp %in% "55-59" ~ "4000",
+                          idade_gp %in% "60-64" ~ "4000",
+                          idade_gp %in% "65-69" ~ "3000",
+                          idade_gp %in% "70-74" ~ "2000",
+                          idade_gp %in% "75-79" ~ "1000",
+                          idade_gp %in% "80-84" ~ "500",
+                          idade_gp %in% "85+" ~ "500",
+                          TRUE ~ idade_gp),
+          cid_cat_3 = case_when(
+            grepl("C0[0-6]", CID_3) ~ "cav_oral",
+            grepl("C0[7-8]", CID_3) ~ "gl_salivares",
+            grepl("C09|C10", CID_3) ~ "orofaringe",
+            grepl("C11", CID_3) ~ "nasofaringe",
+            grepl("C1[2-3]", CID_3) ~ "hipofaringe",
+            grepl("C15", CID_3) ~ "esofago",
+            grepl("C16", CID_3) ~ "estomago",
+            grepl("C1[8-9]|C20", CID_3) ~ "colorretal",
+            grepl("C21", CID_3) ~ "anus",
+            grepl("C22", CID_3) ~ "figado",
+            grepl("C23", CID_3) ~ "vesicula",
+            grepl("C25", CID_3) ~ "pancreas",
+            grepl("C32", CID_3) ~ "laringe",
+            grepl("C3[3-4]", CID_3) ~ "TBL",
+            grepl("C4[0-1]", CID_3) ~ "ossos",
+            grepl("C43", CID_3) ~ "melanoma",
+            grepl("C44", CID_3) ~ "pele",
+            grepl("C45", CID_3) ~ "mesotelioma",
+            grepl("C46", CID_3) ~ "kaposi",
+            grepl("C50", CID_3) ~ "mama",
+            grepl("C51", CID_3) ~ "vulva",
+            grepl("C52", CID_3) ~ "vagina",
+            grepl("C53", CID_3) ~ "col_utero",
+            grepl("C54", CID_3) ~ "utero",
+            grepl("C56", CID_3) ~ "ovario",
+            grepl("C60", CID_3) ~ "penis",
+            grepl("C61", CID_3) ~ "prostata",
+            grepl("C62", CID_3) ~ "testiculo",
+            grepl("C6[4-5]", CID_3) ~ "rim",
+            grepl("C67", CID_3) ~ "bexiga",
+            grepl("C7[0-2]", CID_3) ~ "SNC",
+            grepl("C73", CID_3) ~ "tireoide",
+            grepl("C81", CID_3) ~ "LH",
+            grepl("C8[2-6]|C96", CID_3) ~ "LNH",
+            grepl("C9[1-5]", CID_3) ~ "leucemia",
+            grepl("C88|C90", CID_3) ~ "mieloma"),
+            cid_cat_2 = case_when(
+              grepl("C0[0-9]|C1[0-4]", CID_3) ~ "Neoplasias de cabeca e pescoco",
+              grepl("C1[5-9]|C2[0-6]", CID_3) ~ "Neoplasias do aparelho digestivo",
+              grepl("C3[0-9]", CID_3) ~ "Neoplasias do aparelho respiratorio",
+              grepl("C4[0-1]", CID_3) ~ "Neoplasias dos ossos",
+              grepl("C4[3-4]", CID_3) ~ "Neoplasias da pele",
+              grepl("C4[5-9]", CID_3) ~ "Neoplasias dos tecidos moles",
+              grepl("C50", CID_3) ~ "Neoplasias da mama",
+              grepl("C5[1-8]", CID_3) ~ "Neoplasias do aparelho genital feminino",
+              grepl("C6[0-3]", CID_3) ~ "Neoplasias do aparelho genital masculino",
+              grepl("C6[4-8]", CID_3) ~ "Neoplasias do aparelho urinario",
+              grepl("C69|C7[0-2]", CID_3) ~ "Neoplasias dos olhos e SNC",
+              grepl("C7[3-5]", CID_3) ~ "Neoplasias da tireoide e outras glandulas",
+              grepl("C7[6-9]|C80", CID_3) ~ "Neoplasias inespecificas",
+              grepl("C8[1-9]|C9[0-6]", CID_3) ~ "Neoplasias do sistema linfatico e hematopoietico",
+              grepl("D0[0-9]", CID_3) ~ "Neoplasias in situ",
+              grepl("D1[0-9]|D2[0-9]|D3[0-6]", CID_3) ~ "Neoplasias benignas",
+              grepl("D3[7-9]|D4[0-8]", CID_3) ~ "Neoplasias de comportamento incerto"),
+          cid_cat = case_when(
+            grepl("C0[0-9]|C1[0-4]", CID_3) ~ "Neoplasias de cabeca e pescoco",
+            grepl("C16", CID_3) ~ "Neoplasias do estomago",
+            grepl("C1[8-9]|C20", CID_3) ~ "Neoplasia colorretal",
+            grepl("C15|C17|C2[1-6]", CID_3) ~ "Neoplasias do aparelho digestivo",
+            grepl("C3[3-4]", CID_3) ~ "Neoplasias do pulmao",
+            grepl("C3[0-2]|C3[7-9]", CID_3) ~ "Neoplasias do aparelho respiratorio",
+            grepl("C4[0-1]", CID_3) ~ "Neoplasias dos ossos",
+            grepl("C44", CID_3) ~ "Neoplasias da pele",
+            grepl("C43", CID_3) ~ "Neoplasias melanoma",
+            grepl("C4[5-9]", CID_3) ~ "Neoplasias dos tecidos moles",
+            grepl("C50", CID_3) ~ "Neoplasias da mama",
+            grepl("C5[1-2]|C5[4-5]|C5[7-8]", CID_3) ~ "Neoplasias do ap gen fem",
+            grepl("C53", CID_3) ~ "Neoplasias do colo utero",
+            grepl("C56", CID_3) ~ "Neoplasias do ovario",
+            grepl("C6[0-1]|C63", CID_3) ~ "Neoplasias do ap gen masc",
+            grepl("C62", CID_3) ~ "Neoplasias dos testiculos",
+            grepl("C64", CID_3) ~ "Neoplasias do rim",
+            grepl("C6[5-8]", CID_3) ~ "Neoplasias do aparelho urinario",
+            grepl("C69|C7[0-2]", CID_3) ~ "Neoplasias dos olhos e SNC",
+            grepl("C73", CID_3) ~ "Neoplasias da tireoide",
+            grepl("C7[4-5]", CID_3) ~ "Neoplasias de outras glandulas",
+            grepl("C7[6-9]|C80", CID_3) ~ "Neoplasias inespecficas",
+            grepl("C81", CID_3) ~ "Linfoma de Hodgkin",
+            grepl("C8[2-5]", CID_3) ~ "Linfoma Nao Hodgkin",
+            grepl("C9[1-5]", CID_3) ~ "Leucemias",
+            grepl("C88|C90|C96", CID_3) ~ "Neoplasias hematologicas outras",
+            grepl("D0[0-7]|D09", CID_3) ~ "Neoplasias in situ",
+            grepl("D33|D35", CID_3) ~ "Neoplasias benignas",
+            grepl("D4[3-6]", CID_3) ~ "Neoplasias de comportamento incerto")) %>%
+  rename(cid = CID_3) %>%
+  filter(rcbp == 'Belém'| rcbp == 'Belo Horizonte' | 
+           rcbp == 'Cuiabá' | rcbp == 'Curitiba' |
+           rcbp == 'Distrito Federal' | rcbp == 'DRS Barretos' |
+           rcbp == 'Jahu' | rcbp == 'João Pessoa' |
+           rcbp == 'Manaus' | rcbp == 'Mato Grosso (Interior)' |
+           rcbp == 'Palmas' | rcbp == 'Porto Alegre' |
+           rcbp == 'Recife') %>%
+  filter(ano == 2001 | ano == 2002 | ano == 2003 | ano == 2004
+         | ano == 2005 | ano == 2006 | ano == 2007 | ano == 2008
+         | ano == 2009 | ano == 2010 | ano == 2011 | ano == 2012
+         | ano == 2013 | ano == 2014 | ano == 2015 | ano == 2016
+         | ano == 2017) 
+
+dados2 <- dados %>%
+  filter(cid_cat_2 != 'Neoplasias inespecificas',
+         cid_cat_2 != 'Neoplasias in situ',
+         cid_cat_2 != 'Neoplasias benignas',
+         cid_cat_2 != 'Neoplasias de comportamento incerto')
+
+dados2$wsp <- as.numeric(dados2$wsp)
+
+freq(dados2$ano)
+freq(dados2$rcbp)
+freq(dados2$fx_eta)
+freq(dados2$idade_gp)
+
+###tabela_01
+
+write_clip(table(dados2$ano,dados2$fx_eta))
+
+###tabela_02
+
+ca_AYA <- dados2 %>%
+  filter(fx_eta == '(14,39]')
+
+cinco_pr <- ca_AYA %>% 
+  filter(cid_cat_3 == 'mama'|cid_cat_3 == 'col_utero'|
+           cid_cat_3 == 'pele'|cid_cat_3 == 'tireoide'|
+           cid_cat_3 == 'leucemia'|cid_cat_3 == 'colorretal')
+
+ca_AYA <- ca_AYA %>% 
+  filter(cid != 'C14', cid != 'C17', 
+         cid != 'C24', cid != 'C26', cid != 'C30', 
+         cid != 'C31', cid != 'C37', cid != 'C38', 
+         cid != 'C39', cid != 'C47', cid != 'C48', 
+         cid != 'C49', cid != 'C55', cid != 'C57', 
+         cid != 'C58', cid != 'C63', cid != 'C66', 
+         cid != 'C68', cid != 'C69', cid != 'C74', 
+         cid != 'C75', cid != 'C76', cid != 'C77', 
+         cid != 'C78', cid != 'C79', cid != 'C80', 
+         cid != 'C97', cid != 'D46')
+
+
+write_clip(freq(ca_AYA$idade_gp))
+
+###tabela_03
+
+write_clip(table(dados2$idade_gp,dados2$sexo))
+
+###tabela_04
+
+write_clip(table(dados2$rcbp,dados2$fx_eta))
+
+###tabela_05
+
+write_clip(table(dados2$fx_eta,dados2$sexo))
+
+###tabela_06
+
+write_clip(table(ca_AYA$rcbp,ca_AYA$sexo))
+
+###
+
+ca_inf <- dados2 %>%
+  filter(fx_eta == '(-Inf,14]')
+
+ca_AYA <- dados2 %>%
+  filter(fx_eta == '(14,39]')
+
+freq(ca_AYA$idade_gp)
+
+table(ca_AYA$rcbp,ca_AYA$sexo)
+write_clip(table(ca_AYA$rcbp,ca_AYA$sexo))
+
+table(ca_AYA$ano,ca_AYA$sexo)
+write_clip(table(ca_AYA$ano,ca_AYA$sexo))
+
+freq(ca_AYA$rcbp)
+write_clip(freq(ca_AYA$rcbp))
+
+ca_AYA_fem <- ca_AYA %>%
+  filter(sexo == 'Feminino')
+write_clip(freq(ca_AYA_fem$cid), dec = '.')
+write_clip(freq(ca_AYA_fem$cid_cat_2), dec = '.')
+write_clip(freq(ca_AYA_fem$cid_cat), dec = '.')
+
+ca_AYA_masc <- ca_AYA %>%
+  filter(sexo == 'Masculino')
+write_clip(freq(ca_AYA_masc$cid), dec = '.')
+write_clip(freq(ca_AYA_masc$cid_cat_2), dec = '.')
+write_clip(freq(ca_AYA_masc$cid_cat), dec = '.')
+
+table(ca_AYA$cid_cat,ca_AYA$idade_gp)
+write_clip(table(ca_AYA$cid_cat,ca_AYA$idade_gp))
+
+cid_cat_idade_gp <- tibble(
+  fx_eta = c("15 a 19", "20 a 24", "25 a 29", "30 a 34", "35 a 39"),
+  cid_cat_1 = c('leucemia', 'leucemia', 'colo_ut', 'mama', 'mama'),
+  cid_cat_2 = c('ossos', 'LH', 'mama', 'colo_ut', 'pele'),
+  cid_cat_3 = c('LH', 'tireoide', 'pele', 'pele', 'colo_ut'),
+  cid_cat_4 = c('SNC', 'colo_ut', 'tireoide', 'tireoide', 'colorretal'),
+  cid_cat_5 = c('LNH', 'testiculo', 'leucemia', 'colorretal', 'tireoide'))
+
+ca_AYA_fem_15_19 <- dados2 %>%
+  filter(fx_eta == '(14,39]' & sexo == 'Feminino' & idade_gp == '15-19')
+
+ca_old <- dados2 %>%
+  filter(fx_eta == '(39,59]')
+
+ca_plus <- dados2 %>%
+  filter(fx_eta == '(59, Inf]')
+
+freq(ca_AYA$sexo)
+freq(ca_old$sexo)
+freq(ca_plus$sexo)
+
+write_clip(table(ca_AYA$sexo,ca_AYA$rcbp))
+
+bh <- dados2 %>%
+  filter(rcbp == 'Belo Horizonte')
+freq(bh$fx_eta)
+belem <- dados2 %>%
+  filter(rcbp == 'Belém')
+freq(belem$fx_eta)
+cuiaba <- dados2 %>%
+  filter(rcbp == 'Cuiabá')
+freq(cuiaba$fx_eta)
+
+curitiba <- dados2 %>%
+  filter(rcbp == 'Curitiba')
+freq(curitiba$fx_eta)
+
+df <- dados2 %>%
+  filter(rcbp == 'Distrito Federal')
+freq(df$fx_eta)
+
+barretos <- dados2 %>%
+  filter(rcbp == 'DRS Barretos')
+freq(barretos$fx_eta)
+
+jahu <- dados2 %>%
+  filter(rcbp == 'Jahu')
+freq(jahu$fx_eta)
+
+jp <- dados2 %>%
+  filter(rcbp == 'João Pessoa')
+freq(jp$fx_eta)
+
+manaus <- dados2 %>%
+  filter(rcbp == 'Manaus')
+freq(manaus$fx_eta)
+
+mt <- dados2 %>%
+  filter(rcbp == 'Mato Grosso (Interior)')
+freq(mt$fx_eta)
+
+palmas <- dados2 %>%
+  filter(rcbp == 'Palmas')
+freq(palmas$fx_eta)
+
+poa <- dados2 %>%
+  filter(rcbp == 'Porto Alegre')
+freq(poa$fx_eta)
+
+recife <- dados2 %>%
+  filter(rcbp == 'Recife')
+freq(recife$fx_eta)
+
+write_clip(freq(belem$fx_eta))
+write_clip(freq(manaus$fx_eta))
+write_clip(freq(palmas$fx_eta))
+write_clip(freq(jp$fx_eta))
+write_clip(freq(recife$fx_eta))
+write_clip(freq(cuiaba$fx_eta))
+write_clip(freq(df$fx_eta))
+write_clip(freq(mt$fx_eta))
+write_clip(freq(bh$fx_eta))
+write_clip(freq(barretos$fx_eta))
+write_clip(freq(jahu$fx_eta))
+write_clip(freq(curitiba$fx_eta))
+write_clip(freq(poa$fx_eta))
+
+table(dados$sexo, dados$rcbp)
+write_clip(table(dados$sexo, dados$rcbp))
+
+#save(dados, file = "~/minha tese/RCBP/bases rcbp/dados.rda")
+
+###ASIR_overall
+
+daux1 <- dados2 %>%
+  group_by(idade_gp, ano) %>%
+  summarise(n = n(), .groups = "drop")
+
+daux2 = unique(dados2[,c("idade_gp","ano","pop")])%>% 
+  group_by(idade_gp, ano) %>%
+  summarise(pop_agreg = sum(pop, na.rm=T), .groups = "drop")
+
+daux3 = left_join(daux1, daux2, by = c("idade_gp","ano"))
+
+daux3$tx_esp = (daux3$n/daux3$pop_agreg)*100000
+
+daux3 <- daux3 %>%
+  mutate (wsp = case_when(idade_gp %in% "00-04" ~ "12000",
+                          idade_gp %in% "05-09" ~ "10000",
+                          idade_gp %in% "10-14" ~ "9000",
+                          idade_gp %in% "15-19" ~ "9000",
+                          idade_gp %in% "20-24" ~ "8000",
+                          idade_gp %in% "25-29" ~ "8000",
+                          idade_gp %in% "30-34" ~ "6000",
+                          idade_gp %in% "35-39" ~ "6000",
+                          idade_gp %in% "40-44" ~ "6000",
+                          idade_gp %in% "45-49" ~ "6000",
+                          idade_gp %in% "50-54" ~ "5000",
+                          idade_gp %in% "55-59" ~ "4000",
+                          idade_gp %in% "60-64" ~ "4000",
+                          idade_gp %in% "65-69" ~ "3000",
+                          idade_gp %in% "70-74" ~ "2000",
+                          idade_gp %in% "75-79" ~ "1000",
+                          idade_gp %in% "80-84" ~ "500",
+                          idade_gp %in% "85+" ~ "500",
+                          TRUE ~ idade_gp))
+
+daux3$wsp <- as.numeric(daux3$wsp)
+
+daux3$n_ASIR = (daux3$n/daux3$pop_agreg)*daux3$wsp
+
+daux3 <- na.omit(daux3)
+
+daux4 = unique(daux3[,c("ano","n_ASIR")])%>% 
+  group_by(ano) %>%
+  summarise(ASIR_agreg = sum(n_ASIR, na.rm=T), .groups = "drop")
+
+daux5 = left_join(daux3, daux4, by = c("ano"))
+
+write_clip(daux3, dec = '.')
+
+###ASIR_sexo
+
+rm(daux1, daux2, daux3, daux4, daux5)
+
+daux1 <- ca_AYA %>%
+  group_by(idade_gp, sexo, ano)%>%
+  summarise(n = n(), .groups = "drop")
+
+daux2 = unique(ca_AYA[,c("idade_gp","sexo","ano","pop")]) %>% 
+  group_by(idade_gp, sexo, ano) %>%
+  summarise(pop_agreg = sum(pop, na.rm=T), .groups = "drop")
+
+daux3 = left_join(daux1, daux2, by = c("idade_gp", "sexo", "ano"))
+
+daux3$tx_esp = (daux3$n/daux3$pop_agreg)*100000
+
+daux3 <- daux3 %>%
+  mutate (wsp = case_when(idade_gp %in% "15-19" ~ "24324",
+                          idade_gp %in% "20-24" ~ "21622",
+                          idade_gp %in% "25-29" ~ "21622",
+                          idade_gp %in% "30-34" ~ "16216",
+                          idade_gp %in% "35-39" ~ "16216"))
+
+daux3$wsp <- as.numeric(daux3$wsp)
+
+daux3$n_ASIR = (daux3$n/daux3$pop_agreg)*daux3$wsp
+
+daux3 <- na.omit(daux3)
+
+daux4 = unique(daux3[,c("sexo","ano","n_ASIR")])%>% 
+  group_by(sexo, ano) %>%
+  summarise(ASIR_agreg = sum(n_ASIR, na.rm=T), .groups = "drop")
+
+daux5 = left_join(daux3, daux4, by = c("sexo", "ano"))
+
+write_clip(daux4, dec = '.')
+
+###ASIR_RCBP
+
+rm(daux01, daux02, daux03, daux04, daux05)
+
+daux1 <- ca_AYA %>%
+  group_by(idade_gp, rcbp, ano)%>%
+  summarise(n = n(), .groups = "drop")
+
+daux2 = unique(ca_AYA[,c("idade_gp","rcbp","ano","pop")]) %>% 
+  group_by(idade_gp, rcbp, ano) %>%
+  summarise(pop_agreg = sum(pop, na.rm=T), .groups = "drop")
+
+daux3 = left_join(daux1, daux2, by = c("idade_gp", "rcbp", "ano"))
+
+daux3$tx_esp = (daux3$n/daux3$pop_agreg)*100000
+
+daux3 <- daux3 %>%
+  mutate (wsp = case_when(idade_gp %in% "15-19" ~ "24324",
+                          idade_gp %in% "20-24" ~ "21622",
+                          idade_gp %in% "25-29" ~ "21622",
+                          idade_gp %in% "30-34" ~ "16216",
+                          idade_gp %in% "35-39" ~ "16216"))
+
+daux3$wsp <- as.numeric(daux3$wsp)
+
+daux3$n_ASIR = (daux3$n/daux3$pop_agreg)*daux3$wsp
+
+daux3 <- na.omit(daux3)
+
+daux4 = unique(daux3[,c("rcbp","ano","n_ASIR")])%>% 
+  group_by(rcbp, ano) %>%
+  summarise(ASIR_agreg = sum(n_ASIR, na.rm=T), .groups = "drop")
+
+daux5 = left_join(daux3, daux4, by = c("rcbp", "ano"))
+
+write_clip(daux4, dec = '.')
+
+###ASIR_sistemas
+
+rm(daux1, daux2, daux3, daux4, daux5)
+
+daux1 <- ca_AYA %>%
+  group_by(cid_cat_2, idade_gp, sexo, ano)%>%
+  summarise(n = n(), .groups = "drop")
+
+daux2 = unique(ca_AYA[,c("idade_gp","sexo","ano","pop")]) %>% 
+  group_by(idade_gp, sexo, ano) %>%
+  summarise(pop_agreg = sum(pop, na.rm=T), .groups = "drop")
+
+daux3 = left_join(daux1, daux2, by = c("idade_gp", "sexo", "ano"))
+
+daux3$tx_esp = (daux3$n/daux3$pop_agreg)*100000
+
+daux3 <- daux3 %>%
+  mutate (wsp = case_when(idade_gp %in% "15-19" ~ "24324",
+                          idade_gp %in% "20-24" ~ "21622",
+                          idade_gp %in% "25-29" ~ "21622",
+                          idade_gp %in% "30-34" ~ "16216",
+                          idade_gp %in% "35-39" ~ "16216"))
+
+daux3$wsp <- as.numeric(daux3$wsp)
+
+daux3$n_ASIR = (daux3$n/daux3$pop_agreg)*daux3$wsp
+
+daux3 <- na.omit(daux3)
+
+daux4 = unique(daux3[,c("cid_cat_2", "sexo","ano","n_ASIR")])%>% 
+  group_by(cid_cat_2, sexo, ano) %>%
+  summarise(ASIR_agreg = sum(n_ASIR, na.rm=T), .groups = "drop")
+
+daux5 = left_join(daux3, daux4, by = c("cid_cat_2", "sexo", "ano"))
+
+write_clip(daux4, dec = '.')
+
+###ASIR_cid_IARC_RCBP
+
+rm(daux1, daux2, daux3, daux4, daux5)
+
+daux1 <- cinco_pr %>%
+  group_by(cid_cat_3, idade_gp, rcbp, ano)%>%
+  summarise(n = n(), .groups = "drop")
+
+daux2 = unique(ca_AYA[,c("idade_gp","rcbp","ano","pop")]) %>% 
+  group_by(idade_gp, rcbp, ano) %>%
+  summarise(pop_agreg = sum(pop, na.rm=T), .groups = "drop")
+
+daux3 = left_join(daux1, daux2, by = c("idade_gp", "rcbp", "ano"))
+
+daux3$tx_esp = (daux3$n/daux3$pop_agreg)*100000
+
+daux3 <- daux3 %>%
+  mutate (wsp = case_when(idade_gp %in% "15-19" ~ "24324",
+                          idade_gp %in% "20-24" ~ "21622",
+                          idade_gp %in% "25-29" ~ "21622",
+                          idade_gp %in% "30-34" ~ "16216",
+                          idade_gp %in% "35-39" ~ "16216"))
+
+daux3$wsp <- as.numeric(daux3$wsp)
+
+daux3$n_ASIR = (daux3$n/daux3$pop_agreg)*daux3$wsp
+
+daux3 <- na.omit(daux3)
+
+daux4 = unique(daux3[,c("cid_cat_3", "rcbp", "ano","n_ASIR")])%>% 
+  group_by(cid_cat_3, rcbp, ano) %>%
+  summarise(ASIR_agreg = sum(n_ASIR, na.rm=T), .groups = "drop")
+
+daux5 = left_join(daux3, daux4, by = c("cid_cat_3", "rcbp", "ano"))
+
+write_clip(daux4, dec = '.')
+
+daux4 <- daux4 %>%
+  filter(cid_cat=='Linfoma de Hodgkin'| cid_cat=='Neoplasia colorretal'| cid_cat=='Neoplasias da mama'|
+         cid_cat=='Neoplasias da tireoide'| cid_cat=='Neoplasias da pele'| cid_cat=='Neoplasias dos testiculos'|
+         cid_cat=='Neoplasias do rim'| cid_cat=='Neoplasias dos tecidos moles'|
+         cid_cat=='Neoplasias do colo utero')
+
+###################
+
+mama <- daux3 %>%
+  filter(cid_cat_2 == 'Neoplasias da mama' & sexo == 'Feminino'
+         & fx_eta == '(14,39]')
+
+colo_ut <- daux33 %>%
+  filter(cid == 'C53'
+         & fx_eta == '(14,39]')
+write_clip(colo_ut, dec = '.')
+
+ovario <- daux33 %>%
+  filter(cid == 'C56'
+         & fx_eta == '(14,39]')
+write_clip(ovario, dec = '.')
+
+test <- daux33 %>%
+  filter(cid == 'C62'
+         & fx_eta == '(14,39]')
+write_clip(test, dec = '.')
+
+tireo_masc <- daux3 %>%
+  filter(cid_cat_2 == 'Neoplasias da tireoide e outras glandulas' 
+         & sexo == 'Masculino'
+         & fx_eta == '(14,39]')
+
+tireo_fem <- daux3 %>%
+  filter(cid_cat_2 == 'Neoplasias da tireoide e outras glandulas' 
+         & sexo == 'Feminino'
+         & fx_eta == '(14,39]')
+
+GI_fem <- daux3 %>%
+  filter(cid_cat_2 == 'Neoplasias do aparelho digestivo' 
+         & sexo == 'Feminino' 
+         & fx_eta == '(14,39]')
+
+GI_masc <- daux3 %>%
+  filter(cid_cat_2 == 'Neoplasias do aparelho digestivo' 
+         & sexo == 'Masculino' 
+         & fx_eta == '(14,39]')
+
+write_clip(GI_masc, dec = '.')
+
+gen_fem <- daux3 %>%
+  filter(cid_cat_2 == 'Neoplasias do aparelho genital feminino'  
+         & sexo == 'Feminino' 
+         & fx_eta == '(14,39]')
+
+gen_mas <- daux3 %>%
+  filter(cid_cat_2 == 'Neoplasias do aparelho genital masculino' 
+         & sexo == 'Masculino' 
+         & fx_eta == '(14,39]')
+
+hemato_fem <- daux3 %>%
+  filter(cid_cat_2 == 'Neoplasias do sistema linfatico e hematopoietico' 
+         & sexo == 'Feminino' 
+         & fx_eta == '(14,39]')
+
+hemato_masc <- daux3 %>%
+  filter(cid_cat_2 == 'Neoplasias do sistema linfatico e hematopoietico' 
+         & sexo == 'Masculino' 
+         & fx_eta == '(14,39]')
+
+snc_fem <- daux3 %>%
+  filter(cid_cat_2 == 'Neoplasias dos olhos e SNC'
+         & sexo == 'Feminino' 
+         & fx_eta == '(14,39]')
+
+snc_masc <- daux3 %>%
+  filter(cid_cat_2 == 'Neoplasias dos olhos e SNC'
+         & sexo == 'Masculino' 
+         & fx_eta == '(14,39]')
+
+ccr_fem <- dauxC %>%
+  filter(cid_cat == 'Neoplasia colorretal' & 
+           fx_eta == '(14,39]' &
+           sexo == 'Feminino')
+write_clip(ccr_fem, dec = '.')
+
+ccr_masc <- dauxC %>%
+  filter(cid_cat == 'Neoplasia colorretal' & 
+           fx_eta == '(14,39]' &
+           sexo == 'Masculino')
+write_clip(ccr_masc, dec = '.')
+
+colo_ut <- dauxC %>%
+  filter(cid_cat == 'Neoplasias do colo utero' & 
+           fx_eta == '(14,39]')
+
+LH_fem <- dauxC %>%
+  filter(cid_cat == 'Linfoma de Hodgkin' & 
+           fx_eta == '(14,39]' &
+           sexo == 'Feminino')
+write_clip(LH_fem, dec = '.')
+
+LH_masc <- dauxC %>%
+  filter(cid_cat == 'Linfoma de Hodgkin' & 
+           fx_eta == '(14,39]' &
+           sexo == 'Masculino')
+write_clip(LH_masc, dec = '.')
+
+LNH_fem <- dauxC %>%
+  filter(cid_cat == 'Linfoma Nao Hodgkin' & 
+           fx_eta == '(14,39]' &
+           sexo == 'Feminino' )
+write_clip(LNH_fem, dec = '.')
+
+LNH_masc <- dauxC %>%
+  filter(cid_cat == 'Linfoma Nao Hodgkin' & 
+           fx_eta == '(14,39]' &
+           sexo == 'Masculino' )
+write_clip(LNH_masc, dec = '.')
+
+leuc_fem <- dauxC %>%
+  filter(cid_cat == 'Leucemias' & 
+           fx_eta == '(14,39]' &
+           sexo == 'Feminino')
+write_clip(leuc_fem, dec = '.')
+
+leuc_masc <- dauxC %>%
+  filter(cid_cat == 'Leucemias' & 
+           fx_eta == '(14,39]' &
+           sexo == 'Masculino')
+write_clip(leuc_masc, dec = '.')
+
+estom_fem <- dauxC %>%
+  filter(cid_cat == 'Neoplasias do estomago' & 
+           fx_eta == '(14,39]' &
+           sexo == 'Feminino')
+
+estom_masc <- dauxC %>%
+  filter(cid_cat == 'Neoplasias do estomago' & 
+           fx_eta == '(14,39]' &
+           sexo == 'Masculino')
+
+test <- dauxC %>%
+  filter(cid_cat == 'Neoplasias dos testiculos' & 
+           fx_eta == '(14,39]')
+
+
+
+# Criar o gráfico de linhas
+
+library(ggplot2)
+
+cols <- c("#D43F3A", "#EEA236", "#5CB85C",
+          "#46B8DA", "#9632B8",'slategray',
+          'pink2', 'red', 'navy', 'lightslateblue',
+          'lawngreen', 'grey3', 'yellow1')
+
+ggplot(mama, aes(x = ano, y = tx_esp, color = rcbp)) +
+  geom_line() +
+  scale_color_manual(values = cols) +
+  geom_line(linewidth = 0.8) +  # Adiciona as linhas. size controla a espessura.
+  geom_point(size = 0.9) + # Opcional: adiciona pontos para cada dado.
+  scale_y_log10() +
+  labs(
+    title = "Taxa de incidência para o câncer de mama feminino
+    na população de 15 a 39 anos segundo o RCBP entre os anos
+    de 2001 a 2017",
+    x = "ano",
+    y = "tx_esp",
+    color = "RCBP" # Título da legenda
+  ) +
+  theme_minimal() # Define um tema de visualização mais limpo
+
+ggplot(dados, aes(x = ano, y = tx_esp, color = rcbp, group = rcbp)) +
+  geom_line(size = 0.7) +
+  geom_point(size = 0.8) +
+  scale_y_log10() +
+  labs(
+    x = "ano",
+    y = "tx_esp",
+    color = "RCBP",
+    title = "Taxa de incidência para o câncer de mama feminino
+    na população de 15 a 39 anos segundo o RCBP entre os anos
+    de 2001 a 2017"
+  ) +
+  theme_minimal(base_size = 14) +
+  theme(
+    strip.text = element_text(face = "bold"),
+    legend.position = "bottom"
+  )
+################
+
+# Instalar o pacote se ainda não tiver
+# install.packages("readxl")
+
+# Carregar o pacote
+library(readxl)
+
+# Definir o caminho do arquivo e o nome da aba
+caminho_arquivo <- "C:/Users/patri/Downloads/base.xlsx" # Substitua pelo caminho correto
+nome_aba <- "mama" # Substitua pelo nome exato da aba
+
+# Ler a planilha específica
+minha_planilha <- read_excel(caminho_arquivo, sheet = nome_aba)
+
+# Agora a variável 'minha_planilha' contém os dados da aba especificada
+# Você pode visualizar os dados com:
+# View(minha_planilha)
+
+#################
+
+# Criar a tabela estratificada por 'grupo_tratamento'
+tabela_estratificada <- CreateTableOne(
+  vars = variaveis,
+  strata = "grupo_tratamento",
+  data = dados_exemplo,
+  test = TRUE # Adiciona automaticamente os valores-p (teste qui-quadrado/ANOVA)
+)
+
+# Exibir a tabela
+print(tabela_estratificada, showAllLevels = TRUE, smd = TRUE)
+
+#gtsummary: É uma alternativa moderna e muito flexível,
+#parte do ecossistema tidyverse. A função tbl_summary() é muito intuitiva e gera
+#tabelas visualmente atraentes prontas para publicação.
+
+library(gtsummary)
+tbl_summary()

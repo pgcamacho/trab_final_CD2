@@ -1,0 +1,75 @@
+library(tidyverse)
+
+library(readr)
+AYA <- read_csv("dados/AYA.csv")
+View(AYA)
+
+#Calculando o total de óbitos por câncer de início precoce, segundo o tipo de neoplasia
+
+daux01 <- AYA[ , c('CID_3', 'numcasos')] %>%
+  group_by(CID_3) %>%
+  summarise(tot_obitos = sum(numcasos, na.rm=T), .groups = "drop")
+daux01 <- na.omit(daux01)
+
+#Gerando o gráfico de barras para as causas dos óbitos
+
+g1 <- ggplot(daux01, aes(x = reorder(CID_3, tot_obitos), y = tot_obitos)) +
+  geom_col(fill = '#c34a36', alpha = .6) +
+  labs(
+    title = "Óbitos pelas principais neplasias em adolescentes e adultos jovens (15 a 39 anos), de 2001 a 2017, em treze RCBP* brasileiros.",
+    x = "neplasias",
+    y = "total de óbitos (n)",
+    caption = 'Fonte: SIM, Ministério da Saúde, Brasil.
+    *RCBP - Registro de Câncer de Base Populacional
+    LH - linfoma de Hodgkin; LNH - linfoma não Hodgkin; SNC - sistema nervoso central; TBL - traqueia, bronquios e pulmão'
+  ) +
+  geom_text(
+    aes(label = CID_3),
+    hjust = -0.02,
+    size = 2.5
+  ) +
+  scale_y_continuous(
+    breaks = seq(0, 2500, 100),
+    labels = scales::label_comma(big.mark = " ", decimal.mark = "."),
+    expand = expansion(mult = c(0, 0.32))) +
+  theme_minimal() + 
+  theme(axis.text.y = element_blank(), 
+        text = element_text(size = 8),
+        panel.grid.major.y = element_blank(),
+        panel.grid.minor.x = element_blank(),
+        panel.grid.major.x = element_line(linetype = 'dotted', colour = 'grey70')
+  ) +
+  coord_flip()
+g1
+
+#Construindo um gráfico interativo para as variações das taxas de mortalidade por sexo ao longo do período do estudo
+
+daux00 = unique(AYA[,c("sexo","ano","pop")])%>% 
+  group_by(sexo, ano) %>%
+  summarise(pop_agreg = sum(pop, na.rm=T), .groups = "drop")
+
+daux01 <- AYA[ , c('sexo','ano','numcasos')] %>%
+  group_by(sexo, ano) %>%
+  summarise(tot_obitos = sum(numcasos, na.rm=T), .groups = "drop")
+
+daux03 = left_join(daux00, daux01, by = c("sexo","ano"))
+
+daux03$tx_esp = (daux03$tot_obitos/daux03$pop_agreg)*100000
+
+daux03 <- daux03 [ , c("ano", "sexo", "tx_esp")] %>% 
+  pivot_wider(
+  names_from = sexo,
+  values_from = tx_esp
+  )
+
+library(dygraphs)
+
+dygraph(daux03, main = 'Taxas de mortalidade por câncer 
+        de início precoce, por 100 mil adolescentes e adultos
+        jovens (15 a 39 anos), segundo o sexo, em treze RCBP 
+        brasileiros, de 2001 a 2017' , xlab = 'ano', ylab = 'taxa') %>%
+  dySeries("Masculino", label = "Male", color = '#009efa') %>%
+  dySeries("Feminino", label = "Female", color = '#ff6f91') %>%
+  dyMain(width = 400) %>%
+  dyOptions(stackedGraph = FALSE) %>%
+  dyRangeSelector(height = 25)
